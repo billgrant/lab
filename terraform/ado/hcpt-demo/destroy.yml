@@ -1,0 +1,37 @@
+trigger: none
+
+variables:
+  - group: terraform-env
+
+steps:
+- task: TerraformInstaller@2
+  inputs:
+    terraformVersion: 'latest'
+
+- script: |
+        RC_FILE=".terraformrc"
+        cat > ${RC_FILE} << EOF
+        credentials "app.terraform.io" {
+          token = "$(terraform-api-token)"
+        }
+        EOF
+        mv .terraformrc ~/.terraformrc
+        export TF_CLI_CONFIG_FILE="~/.terraformrc"
+  name: terraform_cloud_credentials
+  displayName: 'HCP Terraform Credentials'
+
+
+- task: TerraformCLI@2
+  inputs:
+    command: 'init'
+    allowTelemetryCollection: true
+
+- task: TerraformCLI@2
+  inputs:
+    command: 'destroy'
+    allowTelemetryCollection: true
+
+- script: |
+        rm ~/.terraformrc
+  name: terraform_cloud_credentials_cleanup
+  displayName: 'HCP Terraform Credentials Clean Up'
