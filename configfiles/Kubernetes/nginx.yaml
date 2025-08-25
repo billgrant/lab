@@ -1,0 +1,14 @@
+# basic manifest
+# run with 'k apply -f nginx.yaml'
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx
+    method: fromcode
+    another: label
+  name: nginx-yaml
+spec:
+  containers:
+  - image: nginx
+    name: nginx
