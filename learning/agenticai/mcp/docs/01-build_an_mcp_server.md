@@ -17,7 +17,7 @@ Install `uv`
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-adding the following to .zshrc
+added the following to .zshrc
 
 ```shell
 export PATH="$HOME/.local/bin:$PATH"
