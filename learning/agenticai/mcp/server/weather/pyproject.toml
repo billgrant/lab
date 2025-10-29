@@ -1,7 +1,7 @@
 [project]
 name = "weather"
 version = "0.1.0"
-description = "Add your description here"
+description = "Simple MCP server that provides weather information."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
