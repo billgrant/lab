@@ -1,0 +1,35 @@
+# Use Python dev as builder image
+FROM cgr.dev/chainguard/python:latest-dev AS builder
+USER root
+# Set working directory
+WORKDIR /app
+# Set environment variables
+# Prevents Python from writing pyc files
+ENV PYTHONDONTWRITEBYTECODE=1
+# Prevents Python from buffering stdout and stderr
+ENV PYTHONUNBUFFERED=1
+# Install system dependencies if needed
+RUN apk add --no-cache curl
+# Install uv (fast Python package installer)
+RUN pip install --no-cache-dir uv
+# Copy dependency files
+COPY pyproject.toml uv.lock* ./
+# Sync dependencies using uv
+RUN uv sync --frozen --no-dev
+# Copy application code
+COPY weather.py .
+
+# Final stage - smaller runtime image
+FROM cgr.dev/chainguard/python:latest
+USER root
+WORKDIR /app
+# Copy environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+# Copy virtual environment and app files from builder
+COPY --from=builder /app/.venv /app/.venv
+COPY --from=builder /app/weather.py /app/weather.py
+COPY --from=builder /app/pyproject.toml /app/pyproject.toml
+
+# Run using the virtual environment's Python directly
+ENTRYPOINT ["/app/.venv/bin/python", "weather.py"]
